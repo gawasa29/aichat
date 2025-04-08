@@ -1,41 +1,42 @@
 {
-  "name": "aichat",
-  "displayName": "aichat",
-  "description": "",
+  "name": "custom-view-samples",
+  "displayName": "Custom view Samples",
+  "description": "Samples for VS Code's view API",
   "version": "0.0.1",
+  "publisher": "alexr00",
   "engines": {
-    "vscode": "^1.99.0"
+    "vscode": "^1.74.0"
   },
-  "categories": [
-    "Other"
-  ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
+  "viewsContainers": {
+    "activitybar": [
       {
-        "command": "aichat.helloWorld",
-        "title": "Hello World"
+        "id": "aichat-dev-ActivityBar",
+        "title": "AIChat",
+        "icon": "assets/icons/icon.svg"
       }
     ]
   },
+  "views": {
+			"aichat-dev-ActivityBar": [
+				{
+					"id": "aichat-dev.SidebarProvider",
+					"name": ""
+				}
+			]
+		}
+},
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src",
-    "test": "vscode-test"
+    "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
-    "@types/vscode": "^1.99.0",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
-    "@typescript-eslint/eslint-plugin": "^8.28.0",
-    "@typescript-eslint/parser": "^8.28.0",
-    "eslint": "^9.23.0",
-    "typescript": "^5.8.2",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@types/node": "^10.12.21",
+    "@types/vscode": "^1.42.0",
+    "typescript": "^3.5.1",
+    "tslint": "^5.12.1"
   }
 }
