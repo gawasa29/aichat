@@ -1,42 +1,43 @@
 {
-  "name": "custom-view-samples",
-  "displayName": "Custom view Samples",
-  "description": "Samples for VS Code's view API",
-  "version": "0.0.1",
-  "publisher": "alexr00",
-  "engines": {
-    "vscode": "^1.74.0"
-  },
-  "activationEvents": [],
-  "main": "./out/extension.js",
-  "contributes": {
-  "viewsContainers": {
-    "activitybar": [
-      {
-        "id": "aichat-dev-ActivityBar",
-        "title": "AIChat",
-        "icon": "assets/icons/icon.svg"
-      }
-    ]
-  },
-  "views": {
+	"name": "custom-view-samples",
+	"displayName": "Custom view Samples",
+	"description": "Samples for VS Code's view API",
+	"version": "0.0.1",
+	"publisher": "alexr00",
+	"engines": {
+		"vscode": "^1.74.0"
+	},
+	"activationEvents": [],
+	"main": "./out/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "aichat-dev-ActivityBar",
+					"title": "AIChat",
+					"icon": "assets/icons/icon.svg"
+				}
+			]
+		},
+		"views": {
 			"aichat-dev-ActivityBar": [
 				{
-					"id": "aichat-dev.SidebarProvider",
+					"type": "webview",
+					"id": "calicoColors.colorsView",
 					"name": ""
 				}
 			]
 		}
-},
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./"
-  },
-  "devDependencies": {
-    "@types/node": "^10.12.21",
-    "@types/vscode": "^1.42.0",
-    "typescript": "^3.5.1",
-    "tslint": "^5.12.1"
-  }
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./"
+	},
+	"devDependencies": {
+		"@types/node": "^10.12.21",
+		"@types/vscode": "^1.42.0",
+		"typescript": "^3.5.1",
+		"tslint": "^5.12.1"
+	}
 }
