@@ -22,8 +22,9 @@
 		"views": {
 			"aichat-dev-ActivityBar": [
 				{
+					"icon": "",
 					"type": "webview",
-					"id": "calicoColors.colorsView",
+					"id": "aichat-dev.SidebarProvider",
 					"name": ""
 				}
 			]
