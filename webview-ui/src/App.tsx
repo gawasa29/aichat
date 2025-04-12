@@ -2,6 +2,7 @@ import { useState } from "react"
 import "./App.css"
 import reactLogo from "./assets/react.svg"
 import ChatView from "./components/chat/ChatView"
+import WelcomeView from "./components/welcome/WelcomeView"
 import viteLogo from "/vite.svg"
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
 	return (
 		<>
 			<ChatView />
+			<WelcomeView />
 			<div>
 				<a href="https://vite.dev" target="_blank">
 					<img src={viteLogo} className="logo" alt="Vite logo" />
