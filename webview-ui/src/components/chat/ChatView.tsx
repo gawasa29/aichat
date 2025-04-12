@@ -1,4 +1,15 @@
-const ChatView = () => {
+type ChatViewProps = {
+	onDone: () => void
+}
+
+const ChatView = ({ onDone }: ChatViewProps) => {
+	const handleSubmit = (withoutDone: boolean = false) => {
+		if (!withoutDone) {
+			onDone()
+		}
+	}
+	console.log(handleSubmit)
+
 	return (
 		<div>
 			<div className="flex flex-col h-full">
