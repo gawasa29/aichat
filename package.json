@@ -28,6 +28,32 @@
 					"name": ""
 				}
 			]
+		},
+		"commands": [
+			{
+				"command": "aichat.plusButtonClicked",
+				"title": "New Task",
+				"icon": "$(add)"
+			},
+			{
+				"command": "aichat.settingsButtonClicked",
+				"title": "Settings",
+				"icon": "$(settings-gear)"
+			}
+		],
+		"menus": {
+			"view/title": [
+				{
+					"command": "aichat.plusButtonClicked",
+					"group": "navigation@1",
+					"when": "view == aichat-dev.SidebarProvider"
+				},
+				{
+					"command": "aichat.settingsButtonClicked",
+					"group": "navigation@6",
+					"when": "view == aichat-dev.SidebarProvider"
+				}
+			]
 		}
 	},
 	"scripts": {

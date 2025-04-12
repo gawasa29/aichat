@@ -4,6 +4,8 @@ import { getUri } from "./getUri"
 
 export class WebviewProvider implements vscode.WebviewViewProvider {
 	public static readonly sideBarId = "aichat-dev.SidebarProvider"
+	public static readonly tabPanelId = "aichat-dev.TabPanelProvider"
+
 	private static activeInstances: Set<WebviewProvider> = new Set()
 	public view?: vscode.WebviewView | vscode.WebviewPanel
 
@@ -15,11 +17,7 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 		WebviewProvider.activeInstances.add(this)
 	}
 
-	async resolveWebviewView(
-		webviewView: vscode.WebviewView,
-		context: vscode.WebviewViewResolveContext,
-		token: vscode.CancellationToken
-	) {
+	async resolveWebviewView(webviewView: vscode.WebviewView | vscode.WebviewPanel) {
 		this.view = webviewView
 
 		webviewView.webview.options = {
