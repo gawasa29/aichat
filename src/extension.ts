@@ -36,13 +36,41 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("aichat.plusButtonClicked", (webview: any) => {
-			Logger.log("History button clicked")
+			Logger.log("Plus button clicked")
+			WebviewProvider.getAllInstances().forEach((instance) => {
+				const openSettings = async (instance?: WebviewProvider) => {
+					instance?.controller.postMessageToWebview({
+						type: "action",
+						action: "chatButtonClicked",
+					})
+				}
+				const isSidebar = !webview
+				if (isSidebar) {
+					openSettings(WebviewProvider.getSidebarInstance())
+				} else {
+					WebviewProvider.getTabInstances().forEach(openSettings)
+				}
+			})
 		})
 	)
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand("aichat.settingsButtonClicked", (webview: any) => {
 			Logger.log("Settings button clicked")
+			WebviewProvider.getAllInstances().forEach((instance) => {
+				const openSettings = async (instance?: WebviewProvider) => {
+					instance?.controller.postMessageToWebview({
+						type: "action",
+						action: "settingsButtonClicked",
+					})
+				}
+				const isSidebar = !webview
+				if (isSidebar) {
+					openSettings(WebviewProvider.getSidebarInstance())
+				} else {
+					WebviewProvider.getTabInstances().forEach(openSettings)
+				}
+			})
 		})
 	)
 }

@@ -1,4 +1,5 @@
 import * as vscode from "vscode"
+import { Controller } from "../controller"
 import { getNonce } from "./getNonce"
 import { getUri } from "./getUri"
 
@@ -8,13 +9,22 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 
 	private static activeInstances: Set<WebviewProvider> = new Set()
 	public view?: vscode.WebviewView | vscode.WebviewPanel
+	controller: Controller
 
-	constructor(
-		readonly context: vscode.ExtensionContext,
-
-		private readonly outputChannel: vscode.OutputChannel
-	) {
+	constructor(readonly context: vscode.ExtensionContext, private readonly outputChannel: vscode.OutputChannel) {
 		WebviewProvider.activeInstances.add(this)
+		this.controller = new Controller(context, outputChannel, this)
+	}
+	public static getAllInstances(): WebviewProvider[] {
+		return Array.from(this.activeInstances)
+	}
+
+	public static getSidebarInstance() {
+		return Array.from(this.activeInstances).find((instance) => instance.view && "onDidChangeVisibility" in instance.view)
+	}
+
+	public static getTabInstances(): WebviewProvider[] {
+		return Array.from(this.activeInstances).filter((instance) => instance.view && "onDidChangeViewState" in instance.view)
 	}
 
 	async resolveWebviewView(webviewView: vscode.WebviewView | vscode.WebviewPanel) {
