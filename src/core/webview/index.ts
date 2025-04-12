@@ -2,7 +2,7 @@ import * as vscode from "vscode"
 import { getNonce } from "./getNonce"
 
 export class WebviewProvider implements vscode.WebviewViewProvider {
-	public static readonly sideBarId = "aichat-dev.SidebarProvider" // used in package.json as the view's id. This value cannot be changed due to how vscode caches views based on their id, and updating the id would break existing instances of the extension.
+	public static readonly sideBarId = "aichat-dev.SidebarProvider"
 	private static activeInstances: Set<WebviewProvider> = new Set()
 	public view?: vscode.WebviewView | vscode.WebviewPanel
 
@@ -27,6 +27,7 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 			localResourceRoots: [this.context.extensionUri],
 		}
 
+		// Set the HTML content for the webview panel
 		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview)
 	}
 
@@ -66,6 +67,7 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 				</ul>
 
 				<button class="add-color-button">Add Color</button>
+				<h1>こんにちは</h>
 
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
