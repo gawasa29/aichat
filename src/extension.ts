@@ -33,6 +33,18 @@ export function activate(context: vscode.ExtensionContext) {
 			webviewOptions: { retainContextWhenHidden: true },
 		})
 	)
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("aichat.plusButtonClicked", (webview: any) => {
+			Logger.log("History button clicked")
+		})
+	)
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("aichat.settingsButtonClicked", (webview: any) => {
+			Logger.log("Settings button clicked")
+		})
+	)
 }
 
 // This method is called when your extension is deactivated
