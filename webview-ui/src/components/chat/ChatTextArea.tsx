@@ -1,9 +1,8 @@
-import React, { forwardRef, useCallback, useRef, useState } from "react"
+import { ContextMenuOptionType, insertMention } from "@/utils/context-mentions"
+import { mentionRegex, mentionRegexGlobal } from "@shared/context-mentions"
+import React, { forwardRef, useCallback, useLayoutEffect, useRef, useState } from "react"
 import DynamicTextArea from "react-textarea-autosize"
-import styled from "styled-components"
 import Thumbnails from "../common/Thumbnails"
-
-import { VSCodeButton } from "@vscode/webview-ui-toolkit/react"
 
 interface ChatTextAreaProps {
 	inputValue: string
@@ -16,32 +15,6 @@ interface ChatTextAreaProps {
 
 	onHeightChange?: (height: number) => void
 }
-
-const ButtonGroup = styled.div`
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	flex: 1;
-	min-width: 0;
-`
-
-const ButtonContainer = styled.div`
-	display: flex;
-	align-items: center;
-	gap: 3px;
-	font-size: 10px;
-	white-space: nowrap;
-	min-width: 0;
-	width: 100%;
-`
-
-const ControlsContainer = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-top: -5px;
-	padding: 0px 15px 5px 15px;
-`
 
 const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 	(
@@ -63,6 +36,33 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 		const highlightLayerRef = useRef<HTMLDivElement>(null)
 		const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
 		const [textAreaBaseHeight, setTextAreaBaseHeight] = useState<number | undefined>(undefined)
+		const [selectedType, setSelectedType] = useState<ContextMenuOptionType | null>(null)
+		const [searchQuery, setSearchQuery] = useState("")
+		const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1)
+		const [cursorPosition, setCursorPosition] = useState(0)
+		const [isMouseDownOnMenu] = useState(false)
+
+		const updateCursorPosition = useCallback(() => {
+			if (textAreaRef.current) {
+				setCursorPosition(textAreaRef.current.selectionStart)
+			}
+		}, [])
+
+		const handleKeyUp = useCallback(
+			(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+				if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(e.key)) {
+					updateCursorPosition()
+				}
+			},
+			[updateCursorPosition]
+		)
+
+		const handleBlur = useCallback(() => {
+			// Only hide the context menu if the user didn't click on it
+			if (!isMouseDownOnMenu) {
+			}
+			setIsTextAreaFocused(false)
+		}, [isMouseDownOnMenu])
 
 		/**
 		 * Handles the drag over event to allow dropping.
@@ -72,11 +72,133 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 		 */
 		const onDragOver = (e: React.DragEvent) => {
 			e.preventDefault()
-			setInputValue(inputValue)
 		}
+
+		const handleMentionSelect = useCallback(
+			(type: ContextMenuOptionType, value?: string) => {
+				if (type === ContextMenuOptionType.NoResults) {
+					return
+				}
+
+				if (
+					type === ContextMenuOptionType.File ||
+					type === ContextMenuOptionType.Folder ||
+					type === ContextMenuOptionType.Git
+				) {
+					if (!value) {
+						setSelectedType(type)
+						setSearchQuery("")
+						setSelectedMenuIndex(0)
+						return
+					}
+				}
+
+				setSelectedType(null)
+				if (textAreaRef.current) {
+					let insertValue = value || ""
+					if (type === ContextMenuOptionType.URL) {
+						insertValue = value || ""
+					} else if (type === ContextMenuOptionType.File || type === ContextMenuOptionType.Folder) {
+						insertValue = value || ""
+					} else if (type === ContextMenuOptionType.Problems) {
+						insertValue = "problems"
+					} else if (type === ContextMenuOptionType.Terminal) {
+						insertValue = "terminal"
+					} else if (type === ContextMenuOptionType.Git) {
+						insertValue = value || ""
+					}
+
+					const { newValue, mentionIndex } = insertMention(textAreaRef.current.value, cursorPosition, insertValue)
+
+					setInputValue(newValue)
+					const newCursorPosition = newValue.indexOf(" ", mentionIndex + insertValue.length) + 1
+					setCursorPosition(newCursorPosition)
+
+					// textAreaRef.current.focus()
+
+					// scroll to cursor
+					setTimeout(() => {
+						if (textAreaRef.current) {
+							textAreaRef.current.blur()
+							textAreaRef.current.focus()
+						}
+					}, 0)
+				}
+			},
+			[setInputValue, cursorPosition]
+		)
+
 		const handleThumbnailsHeightChange = useCallback((height: number) => {
 			setThumbnailsHeight(height)
 		}, [])
+
+		const handleKeyDown = useCallback(
+			(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+				const isComposing = event.nativeEvent?.isComposing ?? false
+				if (event.key === "Enter" && !event.shiftKey && !isComposing) {
+					event.preventDefault()
+					setIsTextAreaFocused(false)
+					onSend()
+				}
+
+				if (event.key === "Backspace" && !isComposing) {
+					const charBeforeCursor = inputValue[cursorPosition - 1]
+					const charAfterCursor = inputValue[cursorPosition + 1]
+
+					const charBeforeIsWhitespace =
+						charBeforeCursor === " " || charBeforeCursor === "\n" || charBeforeCursor === "\r\n"
+					const charAfterIsWhitespace =
+						charAfterCursor === " " || charAfterCursor === "\n" || charAfterCursor === "\r\n"
+					// checks if char before cursor is whitespace after a mention
+					if (
+						charBeforeIsWhitespace &&
+						inputValue.slice(0, cursorPosition - 1).match(new RegExp(mentionRegex.source + "$")) // "$" is added to ensure the match occurs at the end of the string
+					) {
+						const newCursorPosition = cursorPosition - 1
+						// if mention is followed by another word, then instead of deleting the space separating them we just move the cursor to the end of the mention
+						if (!charAfterIsWhitespace) {
+							event.preventDefault()
+							textAreaRef.current?.setSelectionRange(newCursorPosition, newCursorPosition)
+							setCursorPosition(newCursorPosition)
+						}
+						setCursorPosition(newCursorPosition)
+					}
+				}
+			},
+			[onSend, searchQuery, selectedMenuIndex, handleMentionSelect, selectedType, inputValue, cursorPosition, setInputValue]
+		)
+
+		const handleInputChange = useCallback(
+			(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+				const newValue = e.target.value
+				const newCursorPosition = e.target.selectionStart
+				setInputValue(newValue)
+				setCursorPosition(newCursorPosition)
+
+				setSearchQuery("")
+				setSelectedMenuIndex(-1)
+			},
+			[setInputValue, selectedType]
+		)
+
+		const updateHighlights = useCallback(() => {
+			if (!textAreaRef.current || !highlightLayerRef.current) return
+
+			const text = textAreaRef.current.value
+
+			highlightLayerRef.current.innerHTML = text
+				.replace(/\n$/, "\n\n")
+				.replace(/[<>&]/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c] || c))
+				.replace(mentionRegexGlobal, '<mark class="mention-context-textarea-highlight">$&</mark>')
+
+			highlightLayerRef.current.scrollTop = textAreaRef.current.scrollTop
+			highlightLayerRef.current.scrollLeft = textAreaRef.current.scrollLeft
+		}, [])
+
+		useLayoutEffect(() => {
+			updateHighlights()
+		}, [inputValue, updateHighlights])
+
 		return (
 			<div>
 				<div
@@ -138,8 +260,15 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 						value={inputValue}
 						disabled={textAreaDisabled}
 						onChange={(e) => {
-							e
+							handleInputChange(e)
+							updateHighlights()
 						}}
+						onKeyDown={handleKeyDown}
+						onKeyUp={handleKeyUp}
+						onFocus={() => setIsTextAreaFocused(true)}
+						onBlur={handleBlur}
+						onSelect={updateCursorPosition}
+						onMouseUp={updateCursorPosition}
 						onHeightChange={(height) => {
 							if (textAreaBaseHeight === undefined || height < textAreaBaseHeight) {
 								setTextAreaBaseHeight(height)
@@ -211,18 +340,6 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 								flexDirection: "row",
 								alignItems: "center",
 							}}>
-							{/* <div
-								className={`input-icon-button ${shouldDisableImages ? "disabled" : ""} codicon codicon-device-camera`}
-								onClick={() => {
-									if (!shouldDisableImages) {
-										onSelectImages()
-									}
-								}}
-								style={{
-									marginRight: 5.5,
-									fontSize: 16.5,
-								}}
-							/> */}
 							<div
 								data-testid="send-button"
 								className={`input-icon-button ${textAreaDisabled ? "disabled" : ""} codicon codicon-send`}
@@ -236,34 +353,6 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 						</div>
 					</div>
 				</div>
-
-				<ControlsContainer>
-					<ButtonGroup>
-						<VSCodeButton
-							data-testid="context-button"
-							appearance="icon"
-							aria-label="Add Context"
-							disabled={textAreaDisabled}
-							style={{ padding: "0px 0px", height: "20px" }}>
-							<ButtonContainer>
-								<span style={{ fontSize: "13px", marginBottom: 1 }}>@</span>
-								{/* {showButtonText && <span style={{ fontSize: "10px" }}>Context</span>} */}
-							</ButtonContainer>
-						</VSCodeButton>
-
-						<VSCodeButton
-							data-testid="images-button"
-							appearance="icon"
-							aria-label="Add Images"
-							onClick={() => {}}
-							style={{ padding: "0px 0px", height: "20px" }}>
-							<ButtonContainer>
-								<span className="codicon codicon-device-camera" style={{ fontSize: "14px", marginBottom: -3 }} />
-								{/* {showButtonText && <span style={{ fontSize: "10px" }}>Images</span>} */}
-							</ButtonContainer>
-						</VSCodeButton>
-					</ButtonGroup>
-				</ControlsContainer>
 			</div>
 		)
 	}
