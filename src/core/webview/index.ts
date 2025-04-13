@@ -7,7 +7,7 @@ import { getUri } from "./getUri"
 export class WebviewProvider implements vscode.WebviewViewProvider {
 	public static readonly sideBarId = "aichat-dev.SidebarProvider"
 	public static readonly tabPanelId = "aichat-dev.TabPanelProvider"
-
+	private disposables: vscode.Disposable[] = []
 	private static activeInstances: Set<WebviewProvider> = new Set()
 	public view?: vscode.WebviewView | vscode.WebviewPanel
 	controller: Controller
@@ -30,7 +30,7 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 
 	async resolveWebviewView(webviewView: vscode.WebviewView | vscode.WebviewPanel) {
 		this.view = webviewView
-
+		this.outputChannel.appendLine(`start:resolveWebviewView`)
 		webviewView.webview.options = {
 			// Allow scripts in the webview
 			enableScripts: true,
@@ -39,6 +39,10 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 
 		// Set the HTML content for the webview panel
 		webviewView.webview.html = await this.getHMRHtmlContent(webviewView.webview)
+
+		// Sets up an event listener to listen for messages passed from the webview view context
+		// and executes code based on the message that is received
+		this.setWebviewMessageListener(webviewView.webview)
 	}
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
@@ -159,5 +163,38 @@ export class WebviewProvider implements vscode.WebviewViewProvider {
 				</body>
 			</html>
 		`
+	}
+	/**
+	 * Sets up an event listener to listen for messages passed from the webview context and
+	 * executes code based on the message that is received.
+	 *
+	 * IMPORTANT: When passing methods as callbacks in JavaScript/TypeScript, the method's
+	 * 'this' context can be lost. This happens because the method is passed as a
+	 * standalone function reference, detached from its original object.
+	 *
+	 * The Problem:
+	 * Doing: webview.onDidReceiveMessage(this.controller.handleWebviewMessage)
+	 * Would cause 'this' inside handleWebviewMessage to be undefined or wrong,
+	 * leading to "TypeError: this.setUserInfo is not a function"
+	 *
+	 * The Solution:
+	 * We wrap the method call in an arrow function, which:
+	 * 1. Preserves the lexical scope's 'this' binding
+	 * 2. Ensures handleWebviewMessage is called as a method on the controller instance
+	 * 3. Maintains access to all controller methods and properties
+	 *
+	 * Alternative solutions could use .bind() or making handleWebviewMessage an arrow
+	 * function property, but this approach is clean and explicit.
+	 *
+	 * @param webview The webview instance to attach the message listener to
+	 */
+	private setWebviewMessageListener(webview: vscode.Webview) {
+		webview.onDidReceiveMessage(
+			(message) => {
+				this.controller.handleWebviewMessage(message)
+			},
+			null,
+			this.disposables
+		)
 	}
 }

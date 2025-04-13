@@ -1,4 +1,5 @@
 import * as vscode from "vscode"
+import { getSecret } from "./core/storage/state"
 import { WebviewProvider } from "./core/webview"
 import { Logger } from "./services/logging/Logger"
 
@@ -35,8 +36,14 @@ export function activate(context: vscode.ExtensionContext) {
 	)
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand("aichat.plusButtonClicked", (webview: any) => {
+		vscode.commands.registerCommand("aichat.plusButtonClicked", async (webview: any) => {
 			Logger.log("Plus button clicked")
+			// いらない
+			const key = "apiKey"
+			const settingApiKey = getSecret(context, key) as Promise<string | undefined>
+			const getKey = await settingApiKey
+			Logger.log(`apiキー: ${getKey}`)
+
 			WebviewProvider.getAllInstances().forEach((instance) => {
 				const openSettings = async (instance?: WebviewProvider) => {
 					instance?.controller.postMessageToWebview({
