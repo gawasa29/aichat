@@ -39,6 +39,9 @@ const ChatView = ({ isHidden }: ChatViewProps) => {
 		(text: string, images: string[]) => {
 			text = text.trim()
 			if (text || images.length > 0) {
+				console.log("input-icon-buttonをクリック")
+				console.log(`メッセージ長さ${messages.length}`)
+
 				if (messages.length === 0) {
 					vscode.postMessage({ type: "newTask", text, images })
 				} else if (clineAsk) {
@@ -68,7 +71,7 @@ const ChatView = ({ isHidden }: ChatViewProps) => {
 				setTextAreaDisabled(true)
 				setSelectedImages([])
 				setClineAsk(undefined)
-
+				console.log("input-icon-buttonを終わり")
 				// setPrimaryButtonText(undefined)
 				// setSecondaryButtonText(undefined)
 				disableAutoScrollRef.current = false
