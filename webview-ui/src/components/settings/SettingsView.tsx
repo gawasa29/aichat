@@ -8,7 +8,6 @@ type SettingsViewProps = {
 }
 
 const SettingsView = ({ onDone }: SettingsViewProps) => {
-	console.log("SettingsView rendered")
 	const { apiConfiguration } = useExtensionState()
 
 	const handleSubmit = (withoutDone: boolean = false) => {
@@ -16,7 +15,6 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 
 		vscode.postMessage({
 			type: "updateSettings",
-
 			apiConfiguration: apiConfigurationToSubmit,
 		})
 
@@ -24,6 +22,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 			onDone()
 		}
 	}
+
 	return (
 		<div
 			style={{
@@ -49,6 +48,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 				<VSCodeButton onClick={() => handleSubmit(false)}>Done</VSCodeButton>
 			</div>
 			<ApiOptions />
+
 			<p>{apiConfiguration?.apiKey}</p>
 		</div>
 	)

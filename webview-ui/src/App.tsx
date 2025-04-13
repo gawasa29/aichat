@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react"
 import { useEvent } from "react-use"
 import { ExtensionMessage } from "../../src/shared/ExtensionMessage"
-import "./App.css"
 import ChatView from "./components/chat/ChatView"
 import SettingsView from "./components/settings/SettingsView"
 import { ExtensionStateContextProvider } from "./context/ExtensionStateContext"

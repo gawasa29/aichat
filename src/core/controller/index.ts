@@ -51,7 +51,7 @@ export class Controller {
 
 				// api config
 				if (message.apiConfiguration) {
-					this.outputChannel.appendLine(`api設定`)
+					this.outputChannel.appendLine(`apiローカル保存`)
 					await updateApiConfiguration(this.context, message.apiConfiguration)
 				}
 
