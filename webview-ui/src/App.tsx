@@ -3,7 +3,7 @@ import { useEvent } from "react-use"
 import { ExtensionMessage } from "../../src/shared/ExtensionMessage"
 import "./App.css"
 import ChatView from "./components/chat/ChatView"
-import WelcomeView from "./components/welcome/WelcomeView"
+import SettingsView from "./components/settings/SettingsView"
 
 function App() {
 	const [showSettings, setShowSettings] = useState(false)
@@ -26,8 +26,8 @@ function App() {
 	useEvent("message", handleMessage)
 	return (
 		<>
-			{showSettings && <ChatView onDone={() => setShowSettings(false)} />}
-			<WelcomeView />
+			{showSettings && <SettingsView onDone={() => setShowSettings(false)} />}
+			<ChatView isHidden={showSettings ? true : false} />
 		</>
 	)
 }
