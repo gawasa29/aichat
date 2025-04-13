@@ -6,7 +6,7 @@ import ChatView from "./components/chat/ChatView"
 import SettingsView from "./components/settings/SettingsView"
 import { ExtensionStateContextProvider } from "./context/ExtensionStateContext"
 
-function App() {
+const AppContent = () => {
 	const [showSettings, setShowSettings] = useState(false)
 
 	const handleMessage = useCallback((e: MessageEvent) => {
@@ -24,11 +24,21 @@ function App() {
 				break
 		}
 	}, [])
+
 	useEvent("message", handleMessage)
+
 	return (
-		<ExtensionStateContextProvider>
+		<>
 			{showSettings && <SettingsView onDone={() => setShowSettings(false)} />}
 			<ChatView isHidden={showSettings ? true : false} />
+		</>
+	)
+}
+
+const App = () => {
+	return (
+		<ExtensionStateContextProvider>
+			<AppContent />
 		</ExtensionStateContextProvider>
 	)
 }
