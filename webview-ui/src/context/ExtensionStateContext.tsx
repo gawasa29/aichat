@@ -11,9 +11,7 @@ import { useEvent } from "react-use"
 interface ExtensionStateContextType extends ExtensionState {
 	didHydrateState: boolean
 	showWelcome: boolean
-
 	openAiModels: string[]
-
 	filePaths: string[]
 	totalTasksSize: number | null
 	setApiConfiguration: (config: ApiConfiguration) => void
@@ -124,9 +122,7 @@ export const ExtensionStateContextProvider: React.FC<{
 		...state,
 		didHydrateState,
 		showWelcome,
-
 		openAiModels,
-
 		filePaths,
 		totalTasksSize,
 		setApiConfiguration: (value) =>
