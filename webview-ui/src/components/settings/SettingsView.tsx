@@ -6,6 +6,7 @@ type SettingsViewProps = {
 }
 
 const SettingsView = ({ onDone }: SettingsViewProps) => {
+	console.log("SettingsView rendered")
 	return (
 		<div
 			style={{
@@ -17,7 +18,7 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 				padding: "10px 0px 0px 20px",
 				display: "flex",
 				flexDirection: "column",
-				overflow: "hidden",
+				overflow: "auto",
 			}}>
 			<div
 				style={{
@@ -30,7 +31,6 @@ const SettingsView = ({ onDone }: SettingsViewProps) => {
 				<h3 style={{ color: "var(--vscode-foreground)", margin: 0 }}>Settings</h3>
 				<VSCodeButton onClick={onDone}>Done</VSCodeButton>
 			</div>
-
 			<ApiOptions />
 		</div>
 	)

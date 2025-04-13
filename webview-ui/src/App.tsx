@@ -4,6 +4,7 @@ import { ExtensionMessage } from "../../src/shared/ExtensionMessage"
 import "./App.css"
 import ChatView from "./components/chat/ChatView"
 import SettingsView from "./components/settings/SettingsView"
+import { ExtensionStateContextProvider } from "./context/ExtensionStateContext"
 
 function App() {
 	const [showSettings, setShowSettings] = useState(false)
@@ -25,10 +26,10 @@ function App() {
 	}, [])
 	useEvent("message", handleMessage)
 	return (
-		<>
+		<ExtensionStateContextProvider>
 			{showSettings && <SettingsView onDone={() => setShowSettings(false)} />}
 			<ChatView isHidden={showSettings ? true : false} />
-		</>
+		</ExtensionStateContextProvider>
 	)
 }
 

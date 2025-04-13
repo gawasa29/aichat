@@ -59,7 +59,11 @@
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./"
+		"watch": "tsc -watch -p ./",
+		"dev:webview": "cd webview-ui && npm run dev"
+	},
+	"dependencies": {
+		"axios": "^1.8.2"
 	},
 	"devDependencies": {
 		"@types/node": "^10.12.21",

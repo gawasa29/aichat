@@ -1,10 +1,11 @@
-import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import react from "@vitejs/plugin-react"
+import { resolve } from "path"
+import { defineConfig } from "vite"
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  build: {
+	plugins: [react()],
+	build: {
 		outDir: "build",
 		rollupOptions: {
 			output: {
@@ -15,5 +16,14 @@ export default defineConfig({
 			},
 		},
 		chunkSizeWarningLimit: 100000,
+	},
+	resolve: {
+		alias: {
+			"@": resolve(__dirname, "./src"),
+			"@components": resolve(__dirname, "./src/components"),
+			"@context": resolve(__dirname, "./src/context"),
+			"@shared": resolve(__dirname, "../src/shared"),
+			"@utils": resolve(__dirname, "./src/utils"),
+		},
 	},
 })
