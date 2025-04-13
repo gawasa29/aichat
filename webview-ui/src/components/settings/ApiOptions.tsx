@@ -28,19 +28,18 @@ const ApiOptions = () => {
 	}
 	return (
 		<div style={{ display: "flex", flexDirection: "column", gap: 5, marginBottom: 0 }}>
-			<DropdownContainer className="dropdown-container">
-				<label htmlFor="api-provider">
-					<span style={{ fontWeight: 500 }}>API Provider</span>
-				</label>
-				<VSCodeDropdown
-					id="api-provider"
-					style={{
-						minWidth: 130,
-						position: "relative",
-					}}>
-					<VSCodeOption value="anthropic">Anthropic</VSCodeOption>
-				</VSCodeDropdown>
-			</DropdownContainer>
+			<label htmlFor="api-provider">
+				<span style={{ fontWeight: 500 }}>API Provider</span>
+			</label>
+			<VSCodeDropdown
+				id="api-provider"
+				style={{
+					minWidth: 130,
+					position: "relative",
+				}}>
+				<VSCodeOption value="anthropic">Anthropic</VSCodeOption>
+			</VSCodeDropdown>
+
 			<div>
 				<VSCodeTextField
 					value={apiConfiguration?.apiKey || ""}
