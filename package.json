@@ -64,7 +64,7 @@
 	"devDependencies": {
 		"@types/node": "^10.12.21",
 		"@types/vscode": "^1.42.0",
-		"typescript": "^3.5.1",
+		"typescript": "~5.7.2",
 		"tslint": "^5.12.1"
 	}
 }
