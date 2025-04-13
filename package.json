@@ -60,6 +60,8 @@
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
+		"install:all": "npm install && cd webview-ui && npm install",
+		"build:webview": "cd webview-ui && npm run build",
 		"dev:webview": "cd webview-ui && npm run dev"
 	},
 	"dependencies": {
