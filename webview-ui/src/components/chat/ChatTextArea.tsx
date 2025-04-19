@@ -2,36 +2,18 @@ import { ContextMenuOptionType, insertMention } from "@/utils/context-mentions"
 import { mentionRegex, mentionRegexGlobal } from "@shared/context-mentions"
 import React, { forwardRef, useCallback, useLayoutEffect, useRef, useState } from "react"
 import DynamicTextArea from "react-textarea-autosize"
-import Thumbnails from "../common/Thumbnails"
 
 interface ChatTextAreaProps {
 	inputValue: string
 	setInputValue: (value: string) => void
 	textAreaDisabled: boolean
 	placeholderText: string
-	selectedImages: string[]
-	setSelectedImages: React.Dispatch<React.SetStateAction<string[]>>
 	onSend: () => void
-
 	onHeightChange?: (height: number) => void
 }
 
 const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
-	(
-		{
-			inputValue,
-			setInputValue,
-			textAreaDisabled,
-			placeholderText,
-			selectedImages,
-			setSelectedImages,
-			onSend,
-
-			onHeightChange,
-		},
-		ref
-	) => {
-		const [thumbnailsHeight, setThumbnailsHeight] = useState(0)
+	({ inputValue, setInputValue, textAreaDisabled, placeholderText, onSend, onHeightChange }, ref) => {
 		const [isTextAreaFocused, setIsTextAreaFocused] = useState(false)
 		const highlightLayerRef = useRef<HTMLDivElement>(null)
 		const textAreaRef = useRef<HTMLTextAreaElement | null>(null)
@@ -127,10 +109,6 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 			},
 			[setInputValue, cursorPosition]
 		)
-
-		const handleThumbnailsHeightChange = useCallback((height: number) => {
-			setThumbnailsHeight(height)
-		}, [])
 
 		const handleKeyDown = useCallback(
 			(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -243,7 +221,6 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							borderRight: 0,
 							borderTop: 0,
 							borderColor: "transparent",
-							borderBottom: `${thumbnailsHeight + 6}px solid transparent`,
 							padding: "9px 28px 3px 9px",
 						}}
 					/>
@@ -297,7 +274,7 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							borderLeft: 0,
 							borderRight: 0,
 							borderTop: 0,
-							borderBottom: `${thumbnailsHeight + 6}px solid transparent`,
+
 							borderColor: "transparent",
 							// borderRight: "54px solid transparent",
 							// borderLeft: "9px solid transparent", // NOTE: react-textarea-autosize doesn't calculate correct height when using borderLeft/borderRight so we need to use horizontal padding instead
@@ -309,21 +286,6 @@ const ChatTextArea = forwardRef<HTMLTextAreaElement, ChatTextAreaProps>(
 							zIndex: 1,
 						}}
 					/>
-					{selectedImages.length > 0 && (
-						<Thumbnails
-							images={selectedImages}
-							setImages={setSelectedImages}
-							onHeightChange={handleThumbnailsHeightChange}
-							style={{
-								position: "absolute",
-								paddingTop: 4,
-								bottom: 14,
-								left: 22,
-								right: 47, // (54 + 9) + 4 extra padding
-								zIndex: 2,
-							}}
-						/>
-					)}
 					<div
 						style={{
 							position: "absolute",

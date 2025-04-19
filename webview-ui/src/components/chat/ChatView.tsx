@@ -17,7 +17,6 @@ const ChatView = ({ isHidden }: ChatViewProps) => {
 	const [inputValue, setInputValue] = useState("")
 	const textAreaRef = useRef<HTMLTextAreaElement>(null)
 	const [textAreaDisabled, setTextAreaDisabled] = useState(false)
-	const [selectedImages, setSelectedImages] = useState<string[]>([])
 
 	// we need to hold on to the ask because useEffect > lastMessage will always let us know when an ask comes in and handle it, but by the time handleMessage is called, the last message might not be the ask anymore (it could be a say that followed)
 	const [clineAsk, setClineAsk] = useState<ClineAsk | undefined>(undefined)
@@ -36,14 +35,13 @@ const ChatView = ({ isHidden }: ChatViewProps) => {
 	}, [])
 
 	const handleSendMessage = useCallback(
-		(text: string, images: string[]) => {
+		(text: string) => {
 			text = text.trim()
-			if (text || images.length > 0) {
+			if (text) {
 				console.log("input-icon-buttonをクリック")
 				console.log(`メッセージ長さ${messages.length}`)
-
 				if (messages.length === 0) {
-					vscode.postMessage({ type: "newTask", text, images })
+					vscode.postMessage({ type: "newTask", text })
 				} else if (clineAsk) {
 					switch (clineAsk) {
 						case "followup":
@@ -61,15 +59,13 @@ const ChatView = ({ isHidden }: ChatViewProps) => {
 								type: "askResponse",
 								askResponse: "messageResponse",
 								text,
-								images,
 							})
 							break
 						// there is no other case that a textfield should be enabled
 					}
 				}
 				setInputValue("")
-				setTextAreaDisabled(true)
-				setSelectedImages([])
+				setTextAreaDisabled(false)
 				setClineAsk(undefined)
 				console.log("input-icon-buttonを終わり")
 				// setPrimaryButtonText(undefined)
@@ -104,9 +100,7 @@ const ChatView = ({ isHidden }: ChatViewProps) => {
 				setInputValue={setInputValue}
 				textAreaDisabled={textAreaDisabled}
 				placeholderText={placeholderText}
-				selectedImages={selectedImages}
-				setSelectedImages={setSelectedImages}
-				onSend={() => handleSendMessage(inputValue, selectedImages)}
+				onSend={() => handleSendMessage(inputValue)}
 				onHeightChange={() => {
 					if (isAtBottom) {
 						scrollToBottomAuto()
