@@ -52,6 +52,7 @@ export interface ExtensionMessage {
 		| "accountLogoutClicked"
 		| "accountButtonClicked"
 	state?: ExtensionState
+	partialMessage?: ClineMessage
 
 	images?: string[]
 	ollamaModels?: string[]
@@ -95,9 +96,9 @@ export interface ExtensionState {
 	autoApprovalSettings: AutoApprovalSettings
 	browserSettings: BrowserSettings
 	chatSettings: ChatSettings
-	checkpointTrackerErrorMessage?: string
+
 	clineMessages: ClineMessage[]
-	currentTaskItem?: HistoryItem
+
 	customInstructions?: string
 	mcpMarketplaceEnabled?: boolean
 	planActSeparateModelsSetting: boolean
@@ -186,4 +187,14 @@ export interface ClineSayTool {
 	content?: string
 	regex?: string
 	filePattern?: string
+}
+
+export interface ClineApiReqInfo {
+	request?: string
+	tokensIn?: number
+	tokensOut?: number
+	cacheWrites?: number
+	cacheReads?: number
+	cost?: number
+	streamingFailedMessage?: string
 }

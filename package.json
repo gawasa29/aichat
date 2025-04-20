@@ -67,7 +67,8 @@
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.37.0",
 		"@vscode/codicons": "^0.0.36",
-		"axios": "^1.8.2"
+		"axios": "^1.8.2",
+		"os-name": "^6.0.0"
 	},
 	"devDependencies": {
 		"@types/node": "^18.19.86",

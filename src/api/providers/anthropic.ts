@@ -18,6 +18,7 @@ export class AnthropicHandler implements ApiHandler {
 	}
 
 	async *createMessage(systemPrompt: string, messages: Anthropic.Messages.MessageParam[]): ApiStream {
+		console.log("createMessageに入った")
 		const model = this.getModel()
 		let stream: AnthropicStream<Anthropic.RawMessageStreamEvent>
 		const modelId = model.id

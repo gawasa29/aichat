@@ -1,5 +1,5 @@
 import * as vscode from "vscode"
-import { ExtensionMessage } from "../../shared/ExtensionMessage"
+import { ExtensionMessage, ExtensionState, Platform } from "../../shared/ExtensionMessage"
 import { WebviewMessage } from "../../shared/WebviewMessage"
 import { getAllExtensionState, updateApiConfiguration } from "../storage/state"
 import { Task } from "../task"
@@ -30,6 +30,46 @@ export class Controller {
 		this.task = new Task(this, apiConfiguration, chatSettings, customInstructions, task)
 	}
 
+	async postStateToWebview() {
+		const state = await this.getStateToPostToWebview()
+		this.postMessageToWebview({ type: "state", state })
+	}
+	async getStateToPostToWebview(): Promise<ExtensionState> {
+		const {
+			apiConfiguration,
+			lastShownAnnouncementId,
+			customInstructions,
+			taskHistory,
+			autoApprovalSettings,
+			browserSettings,
+			chatSettings,
+			mcpMarketplaceEnabled,
+			telemetrySetting,
+			planActSeparateModelsSetting,
+		} = await getAllExtensionState(this.context)
+
+		return {
+			version: this.context.extension?.packageJSON?.version ?? "",
+			apiConfiguration,
+			customInstructions,
+			uriScheme: vscode.env.uriScheme,
+			clineMessages: this.task?.clineMessages || [],
+			taskHistory: (taskHistory || [])
+				.filter((item) => item.ts && item.task)
+				.sort((a, b) => b.ts - a.ts)
+				.slice(0, 100), // for now we're only getting the latest 100 tasks, but a better solution here is to only pass in 3 for recent task history, and then get the full task history on demand when going to the task history view (maybe with pagination?)
+			shouldShowAnnouncement: false,
+			platform: process.platform as Platform,
+			autoApprovalSettings,
+			browserSettings,
+			chatSettings,
+
+			mcpMarketplaceEnabled,
+			telemetrySetting,
+			planActSeparateModelsSetting,
+			vscMachineId: vscode.env.machineId,
+		}
+	}
 	/**
 	 * Sets up an event listener to listen for messages passed from the webview context and
 	 * executes code based on the message that is received.
