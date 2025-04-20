@@ -1,11 +1,13 @@
 import * as vscode from "vscode"
 import { ExtensionMessage } from "../../shared/ExtensionMessage"
 import { WebviewMessage } from "../../shared/WebviewMessage"
-import { updateApiConfiguration } from "../storage/state"
+import { getAllExtensionState, updateApiConfiguration } from "../storage/state"
+import { Task } from "../task"
 import { WebviewProvider } from "../webview"
 
 export class Controller {
 	private webviewProviderRef: WeakRef<WebviewProvider>
+	private task?: Task
 
 	constructor(
 		readonly context: vscode.ExtensionContext,
@@ -22,20 +24,10 @@ export class Controller {
 	}
 
 	async initClineWithTask(task?: string, images?: string[]) {
-		// TODO
-		// await this.clearTask() // ensures that an existing task doesn't exist before starting a new one, although this shouldn't be possible since user must clear task before starting a new one
-		// const { apiConfiguration, customInstructions, autoApprovalSettings, browserSettings, chatSettings } =
-		// 	await getAllExtensionState(this.context)
-		// this.task = new Task(
-		// 	this,
-		// 	apiConfiguration,
-		// 	autoApprovalSettings,
-		// 	browserSettings,
-		// 	chatSettings,
-		// 	customInstructions,
-		// 	task,
-		// 	images
-		// )
+		const { apiConfiguration, customInstructions, autoApprovalSettings, browserSettings, chatSettings } =
+			await getAllExtensionState(this.context)
+
+		this.task = new Task(this, apiConfiguration, chatSettings, customInstructions, task)
 	}
 
 	/**
@@ -67,6 +59,7 @@ export class Controller {
 				// Could also do this in extension .ts
 				//this.postMessageToWebview({ type: "text", text: `Extension: ${Date.now()}` })
 				// initializing new instance of Cline will make sure that any agentically running promises in old instance don't affect our new task. this essentially creates a fresh slate for the new task
+				this.outputChannel.appendLine(`Received newTask message: ${message.text}`)
 				await this.initClineWithTask(message.text, message.images)
 				break
 			default:

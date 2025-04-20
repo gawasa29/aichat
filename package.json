@@ -65,13 +65,14 @@
 		"dev:webview": "cd webview-ui && npm run dev"
 	},
 	"dependencies": {
-		"axios": "^1.8.2",
-		"@vscode/codicons": "^0.0.36"
+		"@anthropic-ai/sdk": "^0.37.0",
+		"@vscode/codicons": "^0.0.36",
+		"axios": "^1.8.2"
 	},
 	"devDependencies": {
-		"@types/node": "^10.12.21",
+		"@types/node": "^18.19.86",
 		"@types/vscode": "^1.42.0",
-		"typescript": "~5.7.2",
-		"tslint": "^5.12.1"
+		"tslint": "^5.12.1",
+		"typescript": "~5.7.2"
 	}
 }
