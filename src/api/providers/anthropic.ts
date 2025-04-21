@@ -17,6 +17,16 @@ export class AnthropicHandler implements ApiHandler {
 		})
 	}
 
+	// apiをチャットから呼び出す流れ
+	// startTask
+	// ↓
+	// initiateTaskLoop
+	// ↓
+	// recursivelyMakeClineRequests
+	// ↓
+	// attemptApiRequest
+	// ↓
+	// createMessage
 	async *createMessage(systemPrompt: string, messages: Anthropic.Messages.MessageParam[]): ApiStream {
 		console.log("createMessageに入った")
 		const model = this.getModel()
